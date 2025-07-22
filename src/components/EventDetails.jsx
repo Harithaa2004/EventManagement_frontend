@@ -1,21 +1,32 @@
+// EventDetails.jsx
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { QRCodeSVG } from 'qrcode.react';   // <-- Correct import
 import './EventDetails.css';
 
 function EventDetails({ events, onPay }) {
   const { id } = useParams();
   const navigate = useNavigate();
-  const event = events.find(e => e.id === parseInt(id));
+  // Find event by numeric id
+  const event = events.find(e => e.id === parseInt(id, 10));
 
   if (!event) {
     return <p>Event not found</p>;
   }
 
+  // Make the QR value (e.g., link to IPFS or NFT unique hash)
+  // Fallback hash is just for safety; replace with your real default as needed
+  const qrValue = `https://ipfs.io/ipfs/${event.ipfsCid || "QmPlaceholderCID"}`;
+
   return (
     <div className="event-details-container">
       <div className="event-details-content">
         <div className="event-details-image-wrapper">
-          <img src={event.image} alt={event.title} className="event-detail-image" />
+          <img
+            src={event.image}
+            alt={event.title}
+            className="event-detail-image"
+          />
         </div>
 
         <div className="event-details-text">
@@ -26,6 +37,10 @@ function EventDetails({ events, onPay }) {
           <h4>Organizer Information:</h4>
           <p>Host: {event.hostName || "John Doe"}</p>
           <p>Contact: {event.hostContact || "9912348567"}</p>
+          <div className="qr-code-wrapper">
+            <QRCodeSVG value={qrValue} size={200} />
+            <p>Scan this QR code at the venue</p>
+          </div>
         </div>
       </div>
 
